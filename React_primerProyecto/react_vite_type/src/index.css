@@ -1,0 +1,22 @@
+.info{
+    border: 1px solid black;
+}
+
+.section{
+    border: 1px solid black;
+    display: flex;
+    gap: 20px;
+}
+
+.section_container{
+    border: 1px  dotted  black;
+    
+}
+
+.counter{
+ display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap; 
+  text-align: center;
+}
