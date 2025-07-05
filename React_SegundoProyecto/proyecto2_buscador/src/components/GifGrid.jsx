@@ -1,26 +1,9 @@
-import  { useState, useEffect } from "react"
-import { getGifs } from "../helpers/getGifs"
+import  { useFetchGifs} from "../hooks/UseFetchGifs"
 import { InfoItem } from "../components/InfoItem"
 
 export default function GifGrid({categoria}) {
-  const [characters, setCharacters] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchCharacters = async () => {
-      setLoading(true)
-      try {
-        const charactersData = await getGifs(categoria)
-        setCharacters(charactersData)
-      } catch (error) {
-        console.error('Error fetching characters:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    fetchCharacters()
-  }, [categoria])
+   // Usamos el hook personalizado para obtener los personajes y el estado de carga
+   const { characters, loading } = useFetchGifs(categoria)
 
   return (
     <>

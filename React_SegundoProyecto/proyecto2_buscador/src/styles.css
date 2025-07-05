@@ -28,12 +28,9 @@ h3 {
 }
 
 .card-grid {
-  padding-top: 10px;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   justify-content: center;
-  background-color: aqua;
+  padding-top: 10px;
 }
 
 .card {

@@ -12,11 +12,10 @@ export default function GifExpertApp() {
   const [categoria, setCategoria] = useState([
     //Estado que almacena las categorías de personajes de Dragon Ball
     //Este estado se crea con un valor inicial de un array con algunos personajes 
-    "Goku",
-    "Vegeta",
-    "Gohan",
-    "Piccolo",
+    "Goku", 
   ]);
+
+  
 
   //creamos una funcion que se encarga de añadir una nueva categoria al estado
   //Esta funcion recibe un nuevo personaje y lo añade al array de categorias
