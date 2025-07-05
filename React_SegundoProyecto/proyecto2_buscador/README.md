@@ -1,12 +1,54 @@
-# React + Vite
+# Dragon Ball Characters Search (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto es una aplicación web construida con React y Vite que permite buscar y visualizar personajes de Dragon Ball utilizando la API pública de https://dragonball-api.com/.
 
-Currently, two official plugins are available:
+## 🚀 Características principales
+- Búsqueda de personajes de Dragon Ball por nombre.
+- Visualización de información relevante: imagen, raza, ki, ki máximo y nombre.
+- Interfaz moderna y responsiva.
+- Código organizado en componentes reutilizables.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📦 Instalación
+1. Clona el repositorio:
+   ```bash
+   git clone <url-del-repo>
+   ```
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
 
-## Expanding the ESLint configuration
+## 🛠️ Estructura del proyecto
+```
+proyecto2_buscador/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── AddCategory.jsx      # Componente para agregar nuevas búsquedas
+│   │   └── GifGrid.jsx         # Componente que muestra los personajes
+│   ├── helpers/
+│   │   └── getGifs.js          # Función para consultar la API de Dragon Ball
+│   ├── GifExpertApp.jsx        # Componente principal de la app
+│   ├── main.jsx                # Punto de entrada de React
+│   └── styles.css              # Estilos globales
+├── package.json
+└── README.md
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🖥️ Uso
+- Escribe el nombre de un personaje de Dragon Ball en el campo de búsqueda y presiona Enter.
+- Se mostrarán las tarjetas con la información del personaje si existe en la API.
+- Puedes buscar varios personajes y se mostrarán en la misma página.
+
+## 🌐 API utilizada
+- [Dragon Ball API](https://dragonball-api.com/)
+
+## 👨‍💻 Autor
+- Proyecto realizado por [Tu Nombre Aquí]
+
+---
+¡Disfruta explorando el mundo de Dragon Ball con React!

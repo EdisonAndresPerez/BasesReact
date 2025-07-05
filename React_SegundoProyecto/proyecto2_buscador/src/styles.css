@@ -28,13 +28,16 @@ h3 {
 }
 
 .card-grid {
+  padding-top: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  background-color: aqua;
 }
 
 .card {
+  padding-top: 10px;
   align-content: center;
   align-items: center;
   background-color: white;
@@ -60,4 +63,13 @@ h3 {
 
 .card img {
   width: 100%;
+  max-width: 180px;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+.character-info {
+  margin-top: 16px;
 }
