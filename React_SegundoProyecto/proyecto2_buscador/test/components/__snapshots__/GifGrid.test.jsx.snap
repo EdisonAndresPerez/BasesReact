@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`prueba para <GifGrid.jsx> debe coincidir con el snapshot inicial 1`] = `
+<div>
+  <p>
+    Cargando personajes...
+  </p>
+  <div
+    class="card-grid"
+  />
+</div>
+`;

@@ -1,9 +1,8 @@
-import  { useFetchGifs} from "../hooks/UseFetchGifs"
-import { InfoItem } from "../components/InfoItem"
+import { InfoItem } from "../components/InfoItem";
+import { useFetchGifs } from "../hooks/UseFetchGifs";
 
-export default function GifGrid({categoria}) {
-   // Usamos el hook personalizado para obtener los personajes y el estado de carga
-   const { characters, loading } = useFetchGifs(categoria)
+export default function GifGrid({ categoria }) {
+  const { characters, loading } = useFetchGifs(categoria);
 
   return (
     <>
@@ -17,5 +16,5 @@ export default function GifGrid({categoria}) {
         ))}
       </div>
     </>
-  )
+  );
 }
