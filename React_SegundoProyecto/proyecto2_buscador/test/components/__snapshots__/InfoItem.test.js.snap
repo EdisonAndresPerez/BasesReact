@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`test para infoItem.jsx la prueba debe retornar error: falta las props name, race y ki 1`] = `
+<div>
+  <div
+    class="card"
+  >
+    <img
+      alt="Goku"
+      src="https://dragonball-api.com/characters/goku_normal.webp"
+    />
+    <div
+      class="character-info"
+    >
+      <h4>
+        Goku
+      </h4>
+      <p>
+        <strong>
+          Raza:
+        </strong>
+         
+        Saiyan
+      </p>
+      <p>
+        <strong>
+          Ki:
+        </strong>
+         
+        60.000.000
+      </p>
+      <p>
+        <strong>
+          Ki Máximo:
+        </strong>
+         
+        90 Septillion
+      </p>
+    </div>
+  </div>
+</div>
+`;

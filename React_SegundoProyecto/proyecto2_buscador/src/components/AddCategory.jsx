@@ -24,6 +24,7 @@ export default function AddCategory({onNewCategoria}) {
      * @param {object} event - Evento de envío del formulario
      */
     const onSubmit = ( event) => {
+      console.log('holaa mundo desde onsubmit')
       // Previene el comportamiento por defecto del formulario (recargar la página)
         event.preventDefault()
       //Si el input tiene menos de 2 caracteres, no hace nada.
@@ -35,7 +36,7 @@ export default function AddCategory({onNewCategoria}) {
     }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form aria-label="form" onSubmit={onSubmit}>
         <input 
         type="text"
         placeholder='Buscar Personaje de Dragon Ball'

@@ -29,14 +29,21 @@ proyecto2_buscador/
 ├── src/
 │   ├── components/
 │   │   ├── AddCategory.jsx      # Componente para agregar nuevas búsquedas
-│   │   └── GifGrid.jsx         # Componente que muestra los personajes
+│   │   ├── GifGrid.jsx         # Componente que muestra los personajes
+│   │   └── InfoItem.jsx        # Card individual de personaje
 │   ├── helpers/
 │   │   └── getGifs.js          # Función para consultar la API de Dragon Ball
+│   ├── hooks/
+│   │   └── UseFetchGifs.js     # Hook personalizado para fetch de personajes
 │   ├── GifExpertApp.jsx        # Componente principal de la app
 │   ├── main.jsx                # Punto de entrada de React
 │   └── styles.css              # Estilos globales
+├── test/
+│   └── components/
+│       └── InfoItem.test.js    # Pruebas unitarias de InfoItem
 ├── package.json
-└── README.md
+├── README.md
+└── ...
 ```
 
 ## 🖥️ Uso
@@ -47,8 +54,83 @@ proyecto2_buscador/
 ## 🌐 API utilizada
 - [Dragon Ball API](https://dragonball-api.com/)
 
-## 👨‍💻 Autor
-- Proyecto realizado por [Tu Nombre Aquí]
+---
+
+## 🧪 Testing: Babel, Jest y React Testing Library
+
+### Instalación de dependencias para testing
+
+```bash
+npm install --save-dev jest babel-jest @babel/preset-env @babel/preset-react
+npm install --save-dev @testing-library/react @types/jest jest-environment-jsdom
+```
+
+### Configuración de Babel
+
+Crea un archivo llamado `babel.config.cjs` en la raíz del proyecto con el siguiente contenido:
+
+```js
+module.exports = {
+    presets: [
+        [ '@babel/preset-env', { targets: { esmodules: true } } ],
+        [ '@babel/preset-react', { runtime: 'automatic' } ],
+    ],
+};
+```
+> **Nota:** Usa `.cjs` si tu proyecto tiene `"type": "module"` en `package.json`.
+
+### Configuración de Jest
+
+Agrega este script en tu `package.json`:
+
+```json
+"scripts": {
+  "test": "jest --watchAll"
+}
+```
+
+Crea un archivo `jest.config.cjs` en la raíz del proyecto con:
+
+```js
+module.exports = {
+  testEnvironment: "jsdom",
+  transform: {
+    "^.+\\.[jt]sx?$": "babel-jest"
+  }
+};
+```
+
+### Estructura recomendada para tests
+
+Coloca tus archivos de prueba en una carpeta `test/` o junto a los componentes usando el sufijo `.test.js`.
+
+Ejemplo:
+```
+test/components/InfoItem.test.js
+```
+
+### Ejecutar los tests
+
+Para correr todos los tests:
+
+```bash
+npm run test
+```
+
+Para correr un test específico:
+
+```bash
+npm run test -- InfoItem
+```
 
 ---
-¡Disfruta explorando el mundo de Dragon Ball con React!
+
+## 📄 Notas adicionales
+
+- Si cambias la estructura o agregas nuevas funcionalidades, recuerda actualizar este README.
+- Puedes agregar más ejemplos de uso, instrucciones para despliegue, o detalles de configuración avanzada según lo necesites.
+
+---
+
+¿Quieres agregar otra sección o detalle? ¡Solo dime y lo incluimos!
+
