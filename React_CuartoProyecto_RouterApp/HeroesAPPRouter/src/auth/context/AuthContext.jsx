@@ -2,6 +2,8 @@ import { createContext, useContext, useReducer } from 'react';
 
 const AuthContext = createContext();
 
+
+
 // Lee el usuario de localStorage al iniciar
 const userFromStorage = JSON.parse(localStorage.getItem('user'));
 const initialState = {
@@ -34,7 +36,10 @@ export const AuthProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
   const login = (userData) => {
-    dispatch({ type: 'login', payload: userData });
+    return new Promise((resolve) => {
+      dispatch({ type: 'login', payload: userData });
+      resolve();
+    });
   };
 
   const logout = () => {

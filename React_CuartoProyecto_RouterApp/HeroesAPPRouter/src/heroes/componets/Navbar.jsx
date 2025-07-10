@@ -1,11 +1,17 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/context/AuthContext';
 
 export const Navbar = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
         logout();
+        navigate('/login', { 
+            replace: true,
+            state: { from: location } // Pasar la ubicación actual al hacer logout
+        });
     };
 
     return (
@@ -98,7 +104,7 @@ export const Navbar = () => {
                 <ul className="navbar-nav ms-auto align-items-center">
                     <li className="nav-item">
                         <span className="navbar-text text-light me-3 fw-bold">
-                            👋 Bienvenido
+                            👋 Bienvenido{user && user.name ? `, ${user.name}` : ''}
                         </span>
                     </li>
                     <li className="nav-item">

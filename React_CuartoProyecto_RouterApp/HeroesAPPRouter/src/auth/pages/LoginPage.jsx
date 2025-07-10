@@ -1,22 +1,26 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log('Location state:', location.state);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Simulación de login (en una app real harías validación)
     if (email && password) {
       // Extraer nombre del email para personalizar la bienvenida
       const name = email.split('@')[0];
-      login({ email, name });
-      // Usar replace: true para reemplazar la entrada actual del historial
-      navigate('/', { replace: true });
+      await login({ email, name });
+      
+      // Redirigir a la última página visitada (desde el state) o a la raíz
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     }
   };
 
