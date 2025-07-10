@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer } from 'react';
-
+import { types } from '../types/types';
 const AuthContext = createContext();
 
 
@@ -13,10 +13,10 @@ const initialState = {
 
 function authReducer(state, action) {
     switch(action.type){
-        case 'login':
+        case types.login:
             localStorage.setItem('user', JSON.stringify(action.payload));
             return {isAuthenticated: true, user: action.payload};
-        case 'logout':
+        case types.logout:
             localStorage.removeItem('user');
             return {isAuthenticated: false, user: null};
         default:
@@ -37,13 +37,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     return new Promise((resolve) => {
-      dispatch({ type: 'login', payload: userData });
+      dispatch({ type: types.login, payload: userData });
       resolve();
     });
   };
 
   const logout = () => {
-    dispatch({ type: 'logout' });
+    dispatch({ type: types.logout });
   };
 
   const value = {

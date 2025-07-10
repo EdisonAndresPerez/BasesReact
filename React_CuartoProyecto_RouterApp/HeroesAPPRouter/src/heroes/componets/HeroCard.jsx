@@ -6,6 +6,7 @@ export const HeroCard = ({ id, superhero, publisher, alter_ego, first_appearance
   // Función para obtener la imagen del héroe
   const getHeroImage = (heroId) => {
     return `/src/assets/heroes/${heroId}.jpg`;
+    console.log(`Imagen obtenida para el héroe con ID: ${heroId}`);
   };
 
   return (
