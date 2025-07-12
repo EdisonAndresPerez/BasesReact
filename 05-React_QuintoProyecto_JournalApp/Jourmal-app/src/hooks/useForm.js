@@ -1,25 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from "react";
 
-export const useForm = ( initialForm = {} ) => {
-  
-    const [ formState, setFormState ] = useState( initialForm );
+export const useForm = (initialForm = {}, formValidation = {}) => {
+  const [formState, setFormState] = useState(initialForm);
+  const [formErrors, setFormErrors] = useState({});
 
-    const onInputChange = ({ target }) => {
-        const { name, value } = target;
-        setFormState({
-            ...formState,
-            [ name ]: value
-        });
+  // Validar campos cada vez que cambian
+  useEffect(() => {
+    const errors = {};
+    for (const field in formValidation) {
+      const [fn, errorMsg] = formValidation[field];
+      errors[field] = fn(formState[field]) ? null : errorMsg;
     }
+    setFormErrors(errors);
+  }, [formState, formValidation]);
 
-    const onResetForm = () => {
-        setFormState( initialForm );
-    }
+  // Validaciones individuales
+  const isNameValid = !formErrors.name;
+  const isEmailValid = !formErrors.email;
+  const isPasswordValid = !formErrors.password;
 
-    return {
-        ...formState,
-        formState,
-        onInputChange,
-        onResetForm,
-    }
-}
+  // Validación global
+  const isFormValid = useMemo(
+    () => Object.values(formErrors).every((err) => err === null),
+    [formErrors]
+  );
+
+  const onInputChange = ({ target }) => {
+    const { name, value } = target;
+    setFormState({
+      ...formState,
+      [name]: value,
+    });
+  };
+
+  const onResetForm = () => {
+    setFormState(initialForm);
+  };
+
+  return {
+    ...formState,
+    formState,
+    onInputChange,
+    onResetForm,
+    isFormValid,
+    isNameValid,
+    isEmailValid,
+    isPasswordValid,
+    formErrors,
+  };
+};

@@ -1,6 +1,5 @@
-import { checkingCredentials } from "./";
+import { checkingCredentials, logout, login } from "./";
 import { singWithGoogle } from "../../firebase/providers";
-
 
 export const checkingAuthentication = (email, password) => {
   return async (dispatch) => {
@@ -8,16 +7,11 @@ export const checkingAuthentication = (email, password) => {
   };
 };
 
-
 export const startGoogleSignIn = () => {
-      return async (dispatch) => {
+  return async (dispatch) => {
     dispatch(checkingCredentials());
-
-    dispatch(checkingCredentials());
-    const resul = await singWithGoogle()
-    
-
-
-
+    const result = await singWithGoogle();
+    if (!result.ok) return dispatch(logout(result.errorMessage));
+    dispatch(login(result));
   };
-}
+};
