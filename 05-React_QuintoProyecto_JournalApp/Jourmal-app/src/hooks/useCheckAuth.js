@@ -4,8 +4,26 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 import { FirebaseAuth } from '../firebase/config';
 import { login, logout } from '../store/auth';
+import { startLoadingNotes } from '../store/journal/thunks';
 
 
+
+//Escucha el estado de autenticacion de Firebase
+/**
+ * Hook personalizado de React para verificar el estado de autenticación del usuario.
+ * 
+ * Este hook escucha los cambios en el estado de autenticación utilizando Firebase Auth.
+ * Si un usuario está autenticado, despacha acciones para cargar las notas del usuario e iniciar sesión.
+ * Si no hay ningún usuario autenticado, despacha una acción para cerrar sesión.
+ *
+ * @returns {string} El estado actual de autenticación desde el store de Redux.
+ *
+ * @ejemplo
+ * const estado = useCheckAuth();
+ * if (estado === 'authenticated') {
+ *   // El usuario ha iniciado sesión
+ * }
+ */
 
 export const useCheckAuth = () => {
   
@@ -18,6 +36,7 @@ export const useCheckAuth = () => {
         if ( !user ) return dispatch( logout() );
 
         const { uid, email, displayName, photoURL } = user;
+        dispatch( startLoadingNotes() );
         dispatch( login({ uid, email, displayName, photoURL }) );
         })
     }, []);

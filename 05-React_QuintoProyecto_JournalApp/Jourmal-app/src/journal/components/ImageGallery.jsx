@@ -56,14 +56,14 @@ const itemData = [
   },
   {
     img: "/imagenes/foto5.jpg",
-    title: "foto5",
+    title: "foto10",
   },
   {
     img: "/imagenes/foto3.jpg",
-    title: "foto3",
+    title: "foto11",
   },
   {
     img: "/imagenes/foto8.jpg",
-    title: "foto8",
+    title: "foto12",
   },
 ];
