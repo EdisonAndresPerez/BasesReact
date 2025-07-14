@@ -3,17 +3,23 @@ import { Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { AuthLayout } from '../layout/AuthLayout';
 import { useForm } from '../../hooks';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { checkingAuthentication, startGoogleSignIn } from '../../store/auth';
+import { useMemo } from 'react';
 
 export const LoginPages = () => {
 
-  const dispatch = useDispatch();
+const {status} = useSelector( state => state.auth)
 
+
+
+  const dispatch = useDispatch();
   const {email, password, onInputChange} = useForm({
     email: '',
     password: ''
   });
+
+const isAuthenticating = useMemo(() => status === 'checking', [status] )
 
 
 const onSubmit = (event) => {
@@ -23,7 +29,6 @@ const onSubmit = (event) => {
 }
 
 const onGoogleSignIn = () => {
-  // lógica de inicio de sesión con Google aquí
   console.log('Google Sign In');
   dispatch(startGoogleSignIn())
 
@@ -61,12 +66,20 @@ const onGoogleSignIn = () => {
           <Grid item xs={12} sx={{ width: '100%' }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <Button type='submit' variant="contained" fullWidth>
+                <Button
+                 type='submit'
+                  variant="contained"
+                  disabled={isAuthenticating}
+                   fullWidth>
                   Login
                 </Button>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Button  onClick={ onGoogleSignIn} variant="contained" fullWidth startIcon={<Google />}>
+                <Button 
+                 onClick={ onGoogleSignIn}
+                  variant="contained"
+                  disabled={isAuthenticating}
+                   fullWidth startIcon={<Google />}>
                   Google
                 </Button>
               </Grid>
@@ -81,7 +94,6 @@ const onGoogleSignIn = () => {
           </Grid>
         </Grid>
       </form>
-
     </AuthLayout>
   )
 }
