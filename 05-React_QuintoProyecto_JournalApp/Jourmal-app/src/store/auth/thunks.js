@@ -1,9 +1,4 @@
-import {
-  loginWithEmailPassword,
-  registerUserWithEmailPassword,
-  singInWithGoogle,
-  logoutFirebase,
-} from "../../firebase/providers";
+import {loginWithEmailPassword,registerUserWithEmailPassword,singInWithGoogle,  logoutFirebase,} from "../../firebase/providers";
 import { checkingCredentials, logout, login } from "./";
 /**
  * Creador de acción tipo thunk que inicia el proceso de verificación de autenticación.

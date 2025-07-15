@@ -4,9 +4,11 @@ import {
   addNewNote,
   setActiveNote,
   savingNewNote,
+  setSaving,
   setNotes,
 } from "./journalSlide";
 import { loadNote } from "../../helpers/loadNote";
+import { updateNote } from "./journalSlide";
 
 export const startNewNote = () => {
   return async (dispatch, getState) => {
@@ -22,9 +24,10 @@ export const startNewNote = () => {
     console.log("startNewNote");
 
     const newNote = {
-      title: "",
-      body: "",
+      title: '',
+      body: '',
       date: new Date().getTime(),
+      imageUrls: [],
     };
 
     try {
@@ -58,3 +61,22 @@ export const startLoadingNotes = () => {
     dispatch(setNotes(notes));
   };
 };
+
+export const startSaveNote = () => {
+  return async (dispatch, getState) => {
+
+    dispatch(setSaving());
+
+
+    const {uid} = getState().auth
+    const {active: note} = getState().journal
+
+    const noteToFirestore = {...note}
+    delete noteToFirestore.id;
+
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
+    await setDoc(docRef, noteToFirestore, {merge: true});
+
+    dispatch(updateNote(note));
+  }
+}
