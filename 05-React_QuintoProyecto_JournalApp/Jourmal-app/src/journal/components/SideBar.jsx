@@ -48,6 +48,7 @@ export const SideBar = ({ drawerWidth = 240 }) => {
               body={notes.body}
               id={notes.id}
               date={notes.date}
+              imageUrls={notes.imageUrls}
             />
           ))}
         </List>

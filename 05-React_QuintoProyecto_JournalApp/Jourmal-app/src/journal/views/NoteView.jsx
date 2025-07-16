@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useMemo } from "react";
 
 import { useEffect } from "react";
-import { setActiveNote, startSaveNote } from "../../store/journal";
+import { setActiveNote, startSaveNote, startUploadingFiles, startDeleteNote } from "../../store/journal";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -41,7 +41,14 @@ export const NoteView = () => {
   const onFileInputChange = ({ target }) => {
     if (target.files === 0) return;
     console.log(target.files);
+     dispatch(startUploadingFiles(target.files));
   };
+
+ const onDelete = () => {
+  dispatch(startDeleteNote(note.id));
+};
+
+
 
   return (
     <Grid
@@ -99,8 +106,14 @@ export const NoteView = () => {
         />
       </Grid>
 
-      {/* Image gallery */}
-      <ImageGallery />
+      <Grid>
+        <button
+        onClick={onDelete}
+        >Eliminar</button>
+      </Grid>
+
+      <ImageGallery images={note.imageUrls} />
+    
     </Grid>
   );
 };

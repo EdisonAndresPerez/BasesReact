@@ -1,4 +1,4 @@
-import { setDoc, doc, collection } from "firebase/firestore";
+import { setDoc, doc, collection, deleteDoc } from "firebase/firestore";
 import { FirebaseDB } from "../../firebase/config";
 import {
   addNewNote,
@@ -6,9 +6,12 @@ import {
   savingNewNote,
   setSaving,
   setNotes,
+  setPhotosToActiveNote,
+  updateNote,
+  deleteNoteById,         // <-- asegúrate de importar esto
 } from "./journalSlide";
 import { loadNote } from "../../helpers/loadNote";
-import { updateNote } from "./journalSlide";
+import { fileUpload } from "../../helpers/fileUpload";
 
 export const startNewNote = () => {
   return async (dispatch, getState) => {
@@ -24,8 +27,8 @@ export const startNewNote = () => {
     console.log("startNewNote");
 
     const newNote = {
-      title: '',
-      body: '',
+      title: "",
+      body: "",
       date: new Date().getTime(),
       imageUrls: [],
     };
@@ -64,19 +67,61 @@ export const startLoadingNotes = () => {
 
 export const startSaveNote = () => {
   return async (dispatch, getState) => {
-
     dispatch(setSaving());
 
+    const { uid } = getState().auth;
+    const { active: note } = getState().journal;
 
-    const {uid} = getState().auth
-    const {active: note} = getState().journal
-
-    const noteToFirestore = {...note}
+    const noteToFirestore = { ...note };
     delete noteToFirestore.id;
 
-    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
-    await setDoc(docRef, noteToFirestore, {merge: true});
+    if (!Array.isArray(noteToFirestore.imageUrls)) {
+      noteToFirestore.imageUrls = [];
+    }
 
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
+    await setDoc(docRef, noteToFirestore, { merge: true });
     dispatch(updateNote(note));
-  }
-}
+  };
+};
+
+export const startUploadingFiles = (files = []) => {
+  return async (dispatch, getState) => {
+    dispatch(setSaving());
+    //await fileUpload(files[0])
+
+    const fileUploadPromises = [];
+    for (const file of files) {
+      fileUploadPromises.push(fileUpload(file));
+    }
+
+    const photosUrls = await Promise.all(fileUploadPromises);
+
+    const { uid } = getState().auth;
+    const { active: note } = getState().journal;
+
+    const updatedNote = {
+      ...note,
+      imageUrls: Array.from(
+        new Set([...(note.imageUrls || []), ...photosUrls])
+      ),
+    };
+
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
+    await setDoc(docRef, updatedNote, { merge: true });
+
+    dispatch(setActiveNote(updatedNote));
+    dispatch(updateNote(updatedNote));
+  };
+};
+
+export const startDeleteNote = () => {
+  return async (dispatch, getState) => {
+    const { uid } = getState().auth;
+    const { active: note } = getState().journal;
+
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
+    await deleteDoc(docRef);
+    dispatch(deleteNoteById(note.id))
+  };
+};

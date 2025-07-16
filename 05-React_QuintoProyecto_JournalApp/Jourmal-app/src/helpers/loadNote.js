@@ -8,10 +8,13 @@ export const loadNote = async (uid = "") => {
 
   const notes = [];
   docs.forEach((doc) => {
+    const data = doc.data();
     notes.push({
       id: doc.id,
-      ...doc.data(),
+      ...data,
+      imageUrls: Array.isArray(data.imageUrls) ? data.imageUrls : [],
     });
   });
   return notes;
 };
+

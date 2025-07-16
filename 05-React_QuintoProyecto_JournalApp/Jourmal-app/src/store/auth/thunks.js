@@ -1,5 +1,6 @@
-import {loginWithEmailPassword,registerUserWithEmailPassword,singInWithGoogle,  logoutFirebase,} from "../../firebase/providers";
+import {loginWithEmailPassword,registerUserWithEmailPassword,singInWithGoogle,  logoutFirebase} from "../../firebase/providers";
 import { checkingCredentials, logout, login } from "./";
+import { clearNotesLogout } from "../journal/journalSlide";
 /**
  * Creador de acción tipo thunk que inicia el proceso de verificación de autenticación.
  * Despacha la acción `checkingCredentials` para actualizar el estado de autenticación.
@@ -100,7 +101,7 @@ export const startLoginWithEmailPassword = ({ email, password }) => {
 export const startLogout = () => {
   return async (dispatch) => {
     await logoutFirebase();
-
+    dispatch(clearNotesLogout());
     dispatch(logout());
   };
 };
