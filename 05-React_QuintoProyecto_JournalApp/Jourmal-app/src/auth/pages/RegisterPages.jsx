@@ -45,83 +45,114 @@ export const RegisterPage = () => {
     <AuthLayout title="Crear cuenta">
 
       <form onSubmit={ onSubmit } className='animate__animated animate__fadeIn animate__faster'>
-          <Grid container>
-           
-            <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <TextField 
-                label="Nombre completo" 
-                type="text" 
-                placeholder='Nombre completo' 
-                fullWidth
-                name="displayName"
-                value={ displayName }
-                onChange={ onInputChange }
-                error={ !!displayNameValid && formSubmitted }
-                helperText={ displayNameValid }
-              />
-            </Grid>
-
-            <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <TextField 
-                label="Correo" 
-                type="email" 
-                placeholder='correo@google.com' 
-                fullWidth
-                name="email"
-                value={ email }
-                onChange={ onInputChange }
-                error={ !!emailValid && formSubmitted }
-                helperText={ emailValid }
-              />
-            </Grid>
-
-            <Grid item xs={ 12 } sx={{ mt: 2 }}>
-              <TextField 
-                label="Contraseña" 
-                type="password" 
-                placeholder='Contraseña' 
-                fullWidth
-                name="password"
-                value={ password }
-                onChange={ onInputChange }
-                error={ !!passwordValid && formSubmitted  }
-                helperText={ passwordValid }
-              />
-            </Grid>
-            
-            <Grid container spacing={ 2 } sx={{ mb: 2, mt: 1 }}>
-              
-              <Grid 
-                item 
-                xs={ 12 }
-                display={ !!errorMessage ? '': 'none' }
-              >
-                <Alert severity='error'>{ errorMessage }</Alert>
-              </Grid>
-
-              <Grid item xs={ 12 }>
-                <Button 
-                  disabled={ isCheckingAuthentication }
-                  type="submit"
-                  variant='contained' 
-                  fullWidth>
-                  Crear cuenta
-                </Button>
-              </Grid>
-            </Grid>
-
-
-            <Grid container direction='row' justifyContent='end'>
-              <Typography sx={{ mr: 1 }}>¿Ya tienes cuenta?</Typography>
-              <Link component={ RouterLink } color='inherit' to="/auth/login">
-                ingresar
-              </Link>
-            </Grid>
-
+        <Grid container>
+          <Grid item xs={ 12 } sx={{ mt: 2 }}>
+            <TextField 
+              label="Nombre completo" 
+              type="text" 
+              placeholder='Nombre completo' 
+              fullWidth
+              name="displayName"
+              value={ displayName }
+              onChange={ onInputChange }
+              error={ !!displayNameValid && formSubmitted }
+              helperText={ displayNameValid }
+              sx={{
+                borderRadius: 2,
+                boxShadow: "0px 2px 8px rgba(0,0,0,0.07)",
+                backgroundColor: "#f7f7f7",
+              }}
+            />
           </Grid>
 
+          <Grid item xs={ 12 } sx={{ mt: 2 }}>
+            <TextField 
+              label="Correo" 
+              type="email" 
+              placeholder='correo@google.com' 
+              fullWidth
+              name="email"
+              value={ email }
+              onChange={ onInputChange }
+              error={ !!emailValid && formSubmitted }
+              helperText={ emailValid }
+              sx={{
+                borderRadius: 2,
+                boxShadow: "0px 2px 8px rgba(0,0,0,0.07)",
+                backgroundColor: "#f7f7f7",
+              }}
+            />
+          </Grid>
 
-        </form>
+          <Grid item xs={ 12 } sx={{ mt: 2 }}>
+            <TextField 
+              label="Contraseña" 
+              type="password" 
+              placeholder='Contraseña' 
+              fullWidth
+              name="password"
+              value={ password }
+              onChange={ onInputChange }
+              error={ !!passwordValid && formSubmitted  }
+              helperText={ passwordValid }
+              sx={{
+                borderRadius: 2,
+                boxShadow: "0px 2px 8px rgba(0,0,0,0.07)",
+                backgroundColor: "#f7f7f7",
+              }}
+            />
+          </Grid>
+          
+          <Grid container spacing={ 2 } sx={{ mb: 2, mt: 1 }}>
+            <Grid 
+              item 
+              xs={ 12 }
+              display={ !!errorMessage ? '': 'none' }
+            >
+              <Alert severity='error'>{ errorMessage }</Alert>
+            </Grid>
+
+            <Grid item xs={ 12 }>
+              <Button 
+                disabled={ isCheckingAuthentication }
+                type="submit"
+                variant='contained' 
+                fullWidth
+                sx={{
+                  borderRadius: 2,
+                  fontWeight: "bold",
+                  backgroundColor: "#8e24aa", // Morado suave
+                  boxShadow: "0px 2px 8px rgba(142,36,170,0.07)",
+                  height: "40px",
+                  "&:hover": {
+                    backgroundColor: "#6d1b7b",
+                  },
+                }}
+              >
+                Crear cuenta
+              </Button>
+            </Grid>
+          </Grid>
+
+          <Grid 
+            container 
+            justifyContent="center" 
+            sx={{ mt: 1, mx: "auto", width: "fit-content" }}
+          >
+            <Typography sx={{ mr: 1 }}>¿Ya tienes cuenta?</Typography>
+            <Link
+              component={RouterLink}
+              color="primary"
+              to="/auth/login"
+              sx={{ fontWeight: "bold", textDecoration: "underline" }}
+            >
+              ingresar
+            </Link>
+          </Grid>
+        </Grid>
+
+
+      </form>
 
     </AuthLayout>
   )

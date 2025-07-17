@@ -49,9 +49,10 @@ export const LoginPage = () => {
       <form
         onSubmit={onSubmit}
         className="animate__animated animate__fadeIn animate__faster"
+        style={{ width: "100%" }}
       >
-        <Grid container>
-          <Grid item xs={12} sx={{ mt: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
             <TextField
               label="Correo"
               type="email"
@@ -60,10 +61,15 @@ export const LoginPage = () => {
               name="email"
               value={email}
               onChange={onInputChange}
+              sx={{
+                borderRadius: 2,
+                boxShadow: "0px 2px 8px rgba(0,0,0,0.07)",
+                backgroundColor: "#f7f7f7",
+              }}
             />
           </Grid>
 
-          <Grid item xs={12} sx={{ mt: 2 }}>
+          <Grid item xs={12}>
             <TextField
               label="Contraseña"
               type="password"
@@ -72,6 +78,11 @@ export const LoginPage = () => {
               name="password"
               value={password}
               onChange={onInputChange}
+              sx={{
+                borderRadius: 2,
+                boxShadow: "0px 2px 8px rgba(0,0,0,0.07)",
+                backgroundColor: "#f7f7f7",
+              }}
             />
           </Grid>
 
@@ -88,6 +99,11 @@ export const LoginPage = () => {
                 type="submit"
                 variant="contained"
                 fullWidth
+                sx={{
+                  borderRadius: 2,
+                  fontWeight: "bold",
+                  boxShadow: "0px 2px 8px rgba(0,0,0,0.07)",
+                }}
               >
                 Login
               </Button>
@@ -95,18 +111,38 @@ export const LoginPage = () => {
             <Grid item xs={12} sm={6}>
               <Button
                 disabled={isAuthenticating}
-                variant="contained"
+                variant="outlined"
                 fullWidth
                 onClick={onGoogleSignIn}
+                sx={{
+                  borderRadius: 2,
+                  fontWeight: "bold",
+                  backgroundColor: "#fff",
+                  color: "#4285F4",
+                  borderColor: "#4285F4",
+                  boxShadow: "0px 2px 8px rgba(66,133,244,0.07)",
+                  "&:hover": {
+                    backgroundColor: "#e3f0fd",
+                  },
+                }}
+                startIcon={<Google />}
               >
-                <Google />
-                <Typography sx={{ ml: 1 }}>Google</Typography>
+                Google
               </Button>
             </Grid>
           </Grid>
 
-          <Grid container direction="row" justifyContent="end">
-            <Link component={RouterLink} color="inherit" to="/auth/register">
+          <Grid container justifyContent="center">
+            <Link
+              component={RouterLink}
+              color="primary"
+              to="/auth/register"
+              sx={{
+                fontWeight: "bold",
+                textDecoration: "underline",
+                mt: 1,
+              }}
+            >
               Crear una cuenta
             </Link>
           </Grid>

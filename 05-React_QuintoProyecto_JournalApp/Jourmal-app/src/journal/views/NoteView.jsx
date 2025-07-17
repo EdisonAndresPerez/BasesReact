@@ -1,11 +1,9 @@
-import { SaveOutlined, UploadOutlined } from "@mui/icons-material";
-import { Button, Grid, TextField, Typography, IconButton } from "@mui/material";
+import { SaveOutlined, UploadOutlined, DeleteOutline } from "@mui/icons-material";
+import { Button, Grid, TextField, Typography, IconButton, Box } from "@mui/material";
 import { ImageGallery } from "../components/ImageGallery";
 import { useForm } from "../../hooks/useForm";
 import { useSelector } from "react-redux";
-import { useMemo } from "react";
-
-import { useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { setActiveNote, startSaveNote, startUploadingFiles, startDeleteNote } from "../../store/journal";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
@@ -18,7 +16,6 @@ export const NoteView = () => {
   const { body, title, date, onInputChange, formState } = useForm(note);
 
   const dataString = useMemo(() => {
-    console.log("Fecha de la nota:", date);
     const newDate = new Date(date);
     return newDate.toUTCString();
   }, [date]);
@@ -29,68 +26,101 @@ export const NoteView = () => {
 
   useEffect(() => {
     if (messageSaved.length > 0) {
-      Swal.fire(" nota actualizada", messageSaved, "success");
+      Swal.fire("Nota actualizada", messageSaved, "success");
     }
   }, [messageSaved]);
 
   const onSaveNote = () => {
     dispatch(startSaveNote(formState));
-    console.log("Guardando nota:", formState);
   };
 
   const onFileInputChange = ({ target }) => {
     if (target.files === 0) return;
-    console.log(target.files);
-     dispatch(startUploadingFiles(target.files));
+    dispatch(startUploadingFiles(target.files));
   };
 
- const onDelete = () => {
-  dispatch(startDeleteNote(note.id));
-};
-
-
+  const onDelete = () => {
+    dispatch(startDeleteNote(note.id));
+  };
 
   return (
     <Grid
       container
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      sx={{ mb: 1 }}
+      direction="column"
+      spacing={2}
+      sx={{
+        background: "#fff",
+        borderRadius: 3,
+        boxShadow: "0 2px 12px 0 rgba(142,36,170,0.08)",
+        p: { xs: 2, sm: 4 },
+        mt: 2,
+        maxWidth: 800,
+        mx: "auto"
+      }}
     >
-      <Grid item>
-        <Typography fontSize={39} fontWeight="light">
+      <Grid item container justifyContent="space-between" alignItems="center">
+        <Typography fontSize={28} fontWeight="bold" color="#6d1b7b">
           {dataString}
         </Typography>
-      </Grid>
-      <Grid item>
-        <input type="file" id="fileInput" multiple onChange={onFileInputChange} style={{ display: "none" }} />
-        <label htmlFor="fileInput">
-          <IconButton 
+        <Box>
+          <input type="file" id="fileInput" multiple onChange={onFileInputChange} style={{ display: "none" }} />
+          <label htmlFor="fileInput">
+            <IconButton 
+              color="primary"
+              disabled={isSaving}
+              component="span"
+              sx={{ mr: 1, bgcolor: "#ede7f6", "&:hover": { bgcolor: "#d1c4e9" } }}
+            >
+              <UploadOutlined />
+            </IconButton>
+          </label>
+          <Button
+            onClick={onSaveNote}
             color="primary"
+            variant="contained"
             disabled={isSaving}
-            component="span">
-            <UploadOutlined />
-          </IconButton>
-        </label>
-
-        <Button onClick={onSaveNote} color="primary" sx={{ padding: 2 }}>
-          <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
-          Guardar
-        </Button>
+            sx={{
+              fontWeight: "bold",
+              borderRadius: 2,
+              boxShadow: "0px 2px 8px rgba(25,118,210,0.07)",
+              mr: 1
+            }}
+            startIcon={<SaveOutlined />}
+          >
+            Guardar
+          </Button>
+          <Button
+            onClick={onDelete}
+            color="error"
+            variant="outlined"
+            sx={{
+              fontWeight: "bold",
+              borderRadius: 2,
+              boxShadow: "0px 2px 8px rgba(244,67,54,0.07)"
+            }}
+            startIcon={<DeleteOutline />}
+          >
+            Eliminar
+          </Button>
+        </Box>
       </Grid>
 
-      <Grid container>
+      <Grid item>
         <TextField
           type="text"
           variant="filled"
           fullWidth
           placeholder="Ingrese un título"
           label="Título"
-          sx={{ border: "none", mb: 1 }}
           name="title"
           value={title}
           onChange={onInputChange}
+          sx={{
+            mb: 2,
+            backgroundColor: "#f7f7f7",
+            borderRadius: 2,
+            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)"
+          }}
         />
 
         <TextField
@@ -103,17 +133,17 @@ export const NoteView = () => {
           name="body"
           value={body}
           onChange={onInputChange}
+          sx={{
+            backgroundColor: "#f7f7f7",
+            borderRadius: 2,
+            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)"
+          }}
         />
       </Grid>
 
-      <Grid>
-        <button
-        onClick={onDelete}
-        >Eliminar</button>
+      <Grid item>
+        <ImageGallery images={note.imageUrls} />
       </Grid>
-
-      <ImageGallery images={note.imageUrls} />
-    
     </Grid>
   );
 };

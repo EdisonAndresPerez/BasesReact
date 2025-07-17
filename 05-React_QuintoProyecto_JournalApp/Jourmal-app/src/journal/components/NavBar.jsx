@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { AppBar, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, Grid, IconButton, Toolbar, Typography, Box } from '@mui/material';
 import { LogoutOutlined, MenuOutlined } from '@mui/icons-material';
 import { startLogout } from '../../store/auth';
 
@@ -18,7 +18,9 @@ export const NavBar = ({ drawerWidth = 240 }) => {
         position='fixed'
         sx={{ 
             width: { sm: `calc(100% - ${ drawerWidth }px)` },
-            ml: { sm: `${ drawerWidth }px` }
+            ml: { sm: `${ drawerWidth }px` },
+            background: "linear-gradient(90deg, #e3f0fd 0%, #bbdefb 100%)", // Azul suave
+            boxShadow: "0 2px 12px 0 rgba(25,118,210,0.10)"
          }}
     >
         <Toolbar>
@@ -31,14 +33,30 @@ export const NavBar = ({ drawerWidth = 240 }) => {
             </IconButton>
 
             <Grid container direction='row' justifyContent='space-between' alignItems='center'>
-                <Typography variant='h6' noWrap component='div'> JournalApp </Typography>
-
-                <IconButton 
-                    color='error'
-                    onClick={ onLogout }
+                <Typography 
+                    variant='h6' 
+                    noWrap 
+                    component='div' 
+                    sx={{ fontWeight: "bold", letterSpacing: 1, color: "#6d1b7b" }} // Morado oscuro igual al Sidebar
                 >
-                    <LogoutOutlined />
-                </IconButton>
+                    JournalApp
+                </Typography>
+
+                <Box>
+                    <IconButton 
+                        onClick={ onLogout }
+                        sx={{
+                            backgroundColor: "rgba(244,67,54,0.10)", // Rojo claro
+                            color: "#f44336", // Rojo Material UI
+                            ml: 1,
+                            "&:hover": {
+                                backgroundColor: "rgba(244,67,54,0.20)",
+                            }
+                        }}
+                    >
+                        <LogoutOutlined />
+                    </IconButton>
+                </Box>
             </Grid>
 
         </Toolbar>
