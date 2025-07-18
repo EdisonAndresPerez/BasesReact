@@ -39,8 +39,20 @@ export const NoteView = () => {
     dispatch(startUploadingFiles(target.files));
   };
 
-  const onDelete = () => {
-    dispatch(startDeleteNote(note.id));
+  const onDelete = async () => {
+    const result = await Swal.fire({
+    icon: "error",
+    title: "¿Eliminar nota?",
+    text: "Esta acción no se puede deshacer.",
+    showCancelButton: true,
+    confirmButtonColor: "#f44336",
+    cancelButtonColor: "#8e24aa",
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+  });
+    if (result.isConfirmed) {
+      dispatch(startDeleteNote(note.id));
+    }
   };
 
   return (
@@ -89,6 +101,7 @@ export const NoteView = () => {
           >
             Guardar
           </Button>
+
           <Button
             onClick={onDelete}
             color="error"

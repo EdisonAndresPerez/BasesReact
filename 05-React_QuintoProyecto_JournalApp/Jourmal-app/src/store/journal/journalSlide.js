@@ -44,6 +44,10 @@ export const journalSlice = createSlice({
       state.messageSaved = `La nota se actualizó correctamente`;
     },
 
+    setMessageSaved: (state, action) => {
+      state.messageSaved = action.payload;
+    }, // <-- Aquí faltaba el cierre
+
     setPhotosToActiveNote: (state, action) => {
       const urls = Array.isArray(action.payload)
         ? action.payload
@@ -64,7 +68,6 @@ export const journalSlice = createSlice({
       if (state.active?.id === action.payload) {
         state.active = null;
       }
-
     },
   },
 });
@@ -79,4 +82,5 @@ export const {
   setSaving,
   setPhotosToActiveNote,
   clearNotesLogout,
+  setMessageSaved,
 } = journalSlice.actions;

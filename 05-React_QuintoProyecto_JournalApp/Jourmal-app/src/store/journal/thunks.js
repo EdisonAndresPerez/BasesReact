@@ -1,3 +1,5 @@
+
+import { setMessageSaved } from "./journalSlide";
 import { setDoc, doc, collection, deleteDoc } from "firebase/firestore";
 import { FirebaseDB } from "../../firebase/config";
 import {
@@ -112,6 +114,7 @@ export const startUploadingFiles = (files = []) => {
 
     dispatch(setActiveNote(updatedNote));
     dispatch(updateNote(updatedNote));
+    dispatch(setMessageSaved("La imagen se colocó con éxito"));
   };
 };
 
