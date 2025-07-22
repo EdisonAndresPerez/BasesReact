@@ -1,28 +1,47 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getNotaById } from "../../helpers/getNotabyId";
 import { SaveOutlined, UploadOutlined, DeleteOutline } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography, IconButton, Box } from "@mui/material";
 import { ImageGallery } from "../components/ImageGallery";
 import { useForm } from "../../hooks/useForm";
 import { useSelector } from "react-redux";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { setActiveNote, startSaveNote, startUploadingFiles, startDeleteNote } from "../../store/journal";
 import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
+
 export const NoteView = () => {
   const dispatch = useDispatch();
   const { active: note, messageSaved, isSaving } = useSelector((state) => state.journal);
+  const { uid } = useSelector((state) => state.auth);
+  const queryClient = useQueryClient();
 
-  const { body, title, date, onInputChange, formState } = useForm(note);
+  // Obtener la nota específica con TanStack Query
+  const { data: notaData, isLoading, error } = useQuery({
+    queryKey: ["nota", uid, note?.id],
+    queryFn: () => getNotaById(uid, note?.id),
+    enabled: !!uid && !!note?.id,
+  });
+
+  // Inicializar el formulario solo cuando cambie la nota activa
+  const prevNoteId = useRef(note?.id);
+  const { body, title, date, onInputChange, formState, onResetForm } = useForm(notaData || {});
+
+  useEffect(() => {
+    if (note?.id !== prevNoteId.current) {
+      onResetForm();
+      prevNoteId.current = note?.id;
+    }
+  }, [note?.id]);
 
   const dataString = useMemo(() => {
     const newDate = new Date(date);
     return newDate.toUTCString();
   }, [date]);
 
-  useEffect(() => {
-    dispatch(setActiveNote(formState));
-  }, [formState]);
+
 
   useEffect(() => {
     if (messageSaved.length > 0) {
@@ -30,8 +49,11 @@ export const NoteView = () => {
     }
   }, [messageSaved]);
 
-  const onSaveNote = () => {
-    dispatch(startSaveNote(formState));
+  const onSaveNote = async () => {
+    await dispatch(startSaveNote(formState));
+    // Invalidar la query para refrescar los datos de la nota y la lista de notas
+    queryClient.invalidateQueries(["nota", uid, note?.id]);
+    queryClient.invalidateQueries(["notas", uid]);
   };
 
   const onFileInputChange = ({ target }) => {
@@ -41,19 +63,24 @@ export const NoteView = () => {
 
   const onDelete = async () => {
     const result = await Swal.fire({
-    icon: "error",
-    title: "¿Eliminar nota?",
-    text: "Esta acción no se puede deshacer.",
-    showCancelButton: true,
-    confirmButtonColor: "#f44336",
-    cancelButtonColor: "#8e24aa",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  });
+      icon: "error",
+      title: "¿Eliminar nota?",
+      text: "Esta acción no se puede deshacer.",
+      showCancelButton: true,
+      confirmButtonColor: "#f44336",
+      cancelButtonColor: "#8e24aa",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
     if (result.isConfirmed) {
-      dispatch(startDeleteNote(note.id));
+      await dispatch(startDeleteNote(note.id));
+      // Invalidar la query de la lista de notas para actualizar SideBar
+      queryClient.invalidateQueries(["notas", uid]);
     }
   };
+
+  if (isLoading) return <Typography>Cargando nota...</Typography>;
+  if (error) return <Typography color="error">Error: {error.message}</Typography>;
 
   return (
     <Grid
@@ -126,7 +153,7 @@ export const NoteView = () => {
           placeholder="Ingrese un título"
           label="Título"
           name="title"
-          value={title}
+          value={title || ""}
           onChange={onInputChange}
           sx={{
             mb: 2,
@@ -144,7 +171,7 @@ export const NoteView = () => {
           placeholder="¿Qué sucedió en el día de hoy?"
           minRows={5}
           name="body"
-          value={body}
+          value={body || ""}
           onChange={onInputChange}
           sx={{
             backgroundColor: "#f7f7f7",

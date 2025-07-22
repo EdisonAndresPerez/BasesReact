@@ -11,7 +11,7 @@ export const useForm = ( initialForm = {}, formValidations = {}) => {
 
     useEffect(() => {
      setFormState(initialForm);
-    },[initialForm])
+    },[JSON.stringify(initialForm)])
     
     const isFormValid = useMemo( () => {
 

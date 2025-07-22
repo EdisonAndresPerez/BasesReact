@@ -54,6 +54,8 @@ export const startNewNote = () => {
   };
 };
 
+//--------------------------------------------------------
+
 export const startLoadingNotes = () => {
   return async (dispatch, getState) => {
     const { uid } = getState().auth;
@@ -67,30 +69,33 @@ export const startLoadingNotes = () => {
   };
 };
 
-export const startSaveNote = () => {
+//--------------------------------------------------------
+
+export const startSaveNote = (notaData) => {
   return async (dispatch, getState) => {
     dispatch(setSaving());
 
     const { uid } = getState().auth;
-    const { active: note } = getState().journal;
-
-    const noteToFirestore = { ...note };
+    const noteToFirestore = { ...notaData };
     delete noteToFirestore.id;
 
     if (!Array.isArray(noteToFirestore.imageUrls)) {
       noteToFirestore.imageUrls = [];
     }
 
-    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${note.id}`);
+    const docRef = doc(FirebaseDB, `${uid}/journal/notes/${notaData.id}`);
     await setDoc(docRef, noteToFirestore, { merge: true });
-    dispatch(updateNote(note));
+
+    dispatch(updateNote({ ...notaData, ...noteToFirestore }));
+
+  
+    dispatch(startLoadingNotes());
   };
 };
 
 export const startUploadingFiles = (files = []) => {
   return async (dispatch, getState) => {
     dispatch(setSaving());
-    //await fileUpload(files[0])
 
     const fileUploadPromises = [];
     for (const file of files) {

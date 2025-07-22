@@ -1,4 +1,4 @@
-import React from "react";
+
 import {
   Box,
   Divider,
@@ -10,11 +10,18 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { SideBarItem } from "./SideBarItem";
+import { useQuery } from "@tanstack/react-query";
+import { getNotas } from "../../helpers/getNotas";
 
 export const SideBar = ({ drawerWidth = 240 }) => {
-  const { displayName } = useSelector((state) => state.auth);
-  const { notes } = useSelector((state) => state.journal);
+  const { displayName, uid } = useSelector((state) => state.auth);
+  // Ya no usamos esto :const { notes } = useSelector((state) => state.journal);
 
+  const { data: notes = [], isLoading, error } = useQuery({
+    queryKey: ["notas", uid],
+    queryFn: () => getNotas(uid),
+    enabled: !!uid,
+  });
   return (
     <Box
       component="nav"
@@ -50,6 +57,8 @@ export const SideBar = ({ drawerWidth = 240 }) => {
         <Divider sx={{ mb: 1 }} />
 
         <List sx={{ px: 1 }}>
+          {isLoading && <Typography sx={{ px: 2 }}>Cargando notas...</Typography>}
+          {error && <Typography color="error" sx={{ px: 2 }}>Error al cargar notas</Typography>}
           {notes.map((notes) => (
             <SideBarItem
               key={notes.id}
