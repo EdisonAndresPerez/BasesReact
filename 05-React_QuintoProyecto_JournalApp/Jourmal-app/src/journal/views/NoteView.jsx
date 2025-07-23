@@ -1,31 +1,30 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getNotaById } from "../../helpers/getNotabyId";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  updateNota,
+  deleteNota,
+  uploadImagesToNote,
+  getNotaById,
+} from "../../helpers";
 import { SaveOutlined, UploadOutlined, DeleteOutline } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography, IconButton, Box } from "@mui/material";
 import { ImageGallery } from "../components/ImageGallery";
 import { useForm } from "../../hooks/useForm";
 import { useSelector } from "react-redux";
 import { useMemo, useEffect, useRef } from "react";
-import { setActiveNote, startSaveNote, startUploadingFiles, startDeleteNote } from "../../store/journal";
-import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-
-export const NoteView = () => {
-  const dispatch = useDispatch();
-  const { active: note, messageSaved, isSaving } = useSelector((state) => state.journal);
+export const NoteView = ({ note, onNoteDeleted }) => {
   const { uid } = useSelector((state) => state.auth);
   const queryClient = useQueryClient();
 
-  // Obtener la nota específica con TanStack Query
   const { data: notaData, isLoading, error } = useQuery({
     queryKey: ["nota", uid, note?.id],
     queryFn: () => getNotaById(uid, note?.id),
     enabled: !!uid && !!note?.id,
   });
 
-  // Inicializar el formulario solo cuando cambie la nota activa
+
   const prevNoteId = useRef(note?.id);
   const { body, title, date, onInputChange, formState, onResetForm } = useForm(notaData || {});
 
@@ -34,31 +33,47 @@ export const NoteView = () => {
       onResetForm();
       prevNoteId.current = note?.id;
     }
-  }, [note?.id]);
+  }, [notaData, note?.id]);
 
   const dataString = useMemo(() => {
     const newDate = new Date(date);
     return newDate.toUTCString();
   }, [date]);
 
+  // Mutación para actualizar nota
+  const updateMutation = useMutation({
+    mutationFn: (nota) => updateNota({ uid, nota }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["nota", uid, note?.id] });
+      queryClient.invalidateQueries({ queryKey: ["notas", uid] });
+      Swal.fire("Nota actualizada", "La nota se actualizó correctamente", "success");
+    },
+  });
 
+  // Mutación para eliminar nota
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteNota({ uid, id: note.id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notas", uid] });
+      Swal.fire("Nota eliminada", "La nota fue eliminada", "success");
+       console.log("Nota eliminada:", note); 
+      if (onNoteDeleted) onNoteDeleted(note);
+    },
+  });
 
-  useEffect(() => {
-    if (messageSaved.length > 0) {
-      Swal.fire("Nota actualizada", messageSaved, "success");
-    }
-  }, [messageSaved]);
+  // Mutación para subir imágenes
+  const uploadMutation = useMutation({
+    mutationFn: ({ files }) => uploadImagesToNote({ uid, note, files }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["nota", uid, note?.id] });
+      queryClient.invalidateQueries({ queryKey: ["notas", uid] });
+      Swal.fire("Imágenes subidas", "Las imágenes se agregaron correctamente", "success");
+    },
+  });
 
-  const onSaveNote = async () => {
-    await dispatch(startSaveNote(formState));
-    // Invalidar la query para refrescar los datos de la nota y la lista de notas
-    queryClient.invalidateQueries(["nota", uid, note?.id]);
-    queryClient.invalidateQueries(["notas", uid]);
-  };
-
-  const onFileInputChange = ({ target }) => {
-    if (target.files === 0) return;
-    dispatch(startUploadingFiles(target.files));
+  const onSaveNote = () => {
+    updateMutation.mutate({ ...formState, id: note.id });
+    console.log("Nota guardada:", formState);
   };
 
   const onDelete = async () => {
@@ -73,10 +88,13 @@ export const NoteView = () => {
       cancelButtonText: "Cancelar",
     });
     if (result.isConfirmed) {
-      await dispatch(startDeleteNote(note.id));
-      // Invalidar la query de la lista de notas para actualizar SideBar
-      queryClient.invalidateQueries(["notas", uid]);
+      deleteMutation.mutate();
     }
+  };
+
+  const onFileInputChange = (e) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    uploadMutation.mutate({ files: e.target.files });
   };
 
   if (isLoading) return <Typography>Cargando nota...</Typography>;
@@ -102,11 +120,17 @@ export const NoteView = () => {
           {dataString}
         </Typography>
         <Box>
-          <input type="file" id="fileInput" multiple onChange={onFileInputChange} style={{ display: "none" }} />
+          <input
+            type="file"
+            id="fileInput"
+            multiple
+            onChange={onFileInputChange}
+            style={{ display: "none" }}
+          />
           <label htmlFor="fileInput">
-            <IconButton 
+            <IconButton
               color="primary"
-              disabled={isSaving}
+              disabled={uploadMutation.isPending}
               component="span"
               sx={{ mr: 1, bgcolor: "#ede7f6", "&:hover": { bgcolor: "#d1c4e9" } }}
             >
@@ -117,7 +141,7 @@ export const NoteView = () => {
             onClick={onSaveNote}
             color="primary"
             variant="contained"
-            disabled={isSaving}
+            disabled={updateMutation.isPending}
             sx={{
               fontWeight: "bold",
               borderRadius: 2,
@@ -128,11 +152,11 @@ export const NoteView = () => {
           >
             Guardar
           </Button>
-
           <Button
             onClick={onDelete}
             color="error"
             variant="outlined"
+            disabled={deleteMutation.isPending}
             sx={{
               fontWeight: "bold",
               borderRadius: 2,
@@ -182,7 +206,7 @@ export const NoteView = () => {
       </Grid>
 
       <Grid item>
-        <ImageGallery images={note.imageUrls} />
+        <ImageGallery images={notaData?.imageUrls || []} />
       </Grid>
     </Grid>
   );

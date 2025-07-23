@@ -13,7 +13,7 @@ import { SideBarItem } from "./SideBarItem";
 import { useQuery } from "@tanstack/react-query";
 import { getNotas } from "../../helpers/getNotas";
 
-export const SideBar = ({ drawerWidth = 240 }) => {
+export const SideBar = ({ drawerWidth = 240, onSelectNote }) => {
   const { displayName, uid } = useSelector((state) => state.auth);
   // Ya no usamos esto :const { notes } = useSelector((state) => state.journal);
 
@@ -59,14 +59,11 @@ export const SideBar = ({ drawerWidth = 240 }) => {
         <List sx={{ px: 1 }}>
           {isLoading && <Typography sx={{ px: 2 }}>Cargando notas...</Typography>}
           {error && <Typography color="error" sx={{ px: 2 }}>Error al cargar notas</Typography>}
-          {notes.map((notes) => (
+          {notes.map((note) => (
             <SideBarItem
-              key={notes.id}
-              title={notes.title}
-              body={notes.body}
-              id={notes.id}
-              date={notes.date}
-              imageUrls={notes.imageUrls}
+              key={note.id}
+              {...note}
+              onSelectNote={onSelectNote}
             />
           ))}
         </List>
