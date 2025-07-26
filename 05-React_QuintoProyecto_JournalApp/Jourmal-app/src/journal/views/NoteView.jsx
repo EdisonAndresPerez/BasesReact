@@ -5,8 +5,20 @@ import {
   uploadImagesToNote,
   getNotaById,
 } from "../../helpers";
-import { SaveOutlined, UploadOutlined, DeleteOutline } from "@mui/icons-material";
-import { Button, Grid, TextField, Typography, IconButton, Box } from "@mui/material";
+import { Button as ShadcnButton } from "@/components/ui/button";
+import {
+  SaveOutlined,
+  UploadOutlined,
+  DeleteOutline,
+} from "@mui/icons-material";
+import {
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  IconButton,
+  Box,
+} from "@mui/material";
 import { ImageGallery } from "../components/ImageGallery";
 import { useForm } from "../../hooks/useForm";
 import { useSelector } from "react-redux";
@@ -18,15 +30,20 @@ export const NoteView = ({ note, onNoteDeleted }) => {
   const { uid } = useSelector((state) => state.auth);
   const queryClient = useQueryClient();
 
-  const { data: notaData, isLoading, error } = useQuery({
+  const {
+    data: notaData,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["nota", uid, note?.id],
     queryFn: () => getNotaById(uid, note?.id),
     enabled: !!uid && !!note?.id,
   });
 
-
   const prevNoteId = useRef(note?.id);
-  const { body, title, date, onInputChange, formState, onResetForm } = useForm(notaData || {});
+  const { body, title, date, onInputChange, formState, onResetForm } = useForm(
+    notaData || {}
+  );
 
   useEffect(() => {
     if (note?.id !== prevNoteId.current) {
@@ -46,7 +63,11 @@ export const NoteView = ({ note, onNoteDeleted }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nota", uid, note?.id] });
       queryClient.invalidateQueries({ queryKey: ["notas", uid] });
-      Swal.fire("Nota actualizada", "La nota se actualizó correctamente", "success");
+      Swal.fire(
+        "Nota actualizada",
+        "La nota se actualizó correctamente",
+        "success"
+      );
     },
   });
 
@@ -56,7 +77,7 @@ export const NoteView = ({ note, onNoteDeleted }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notas", uid] });
       Swal.fire("Nota eliminada", "La nota fue eliminada", "success");
-       console.log("Nota eliminada:", note); 
+      console.log("Nota eliminada:", note);
       if (onNoteDeleted) onNoteDeleted(note);
     },
   });
@@ -67,7 +88,11 @@ export const NoteView = ({ note, onNoteDeleted }) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nota", uid, note?.id] });
       queryClient.invalidateQueries({ queryKey: ["notas", uid] });
-      Swal.fire("Imágenes subidas", "Las imágenes se agregaron correctamente", "success");
+      Swal.fire(
+        "Imágenes subidas",
+        "Las imágenes se agregaron correctamente",
+        "success"
+      );
     },
   });
 
@@ -98,7 +123,8 @@ export const NoteView = ({ note, onNoteDeleted }) => {
   };
 
   if (isLoading) return <Typography>Cargando nota...</Typography>;
-  if (error) return <Typography color="error">Error: {error.message}</Typography>;
+  if (error)
+    return <Typography color="error">Error: {error.message}</Typography>;
 
   return (
     <Grid
@@ -112,7 +138,7 @@ export const NoteView = ({ note, onNoteDeleted }) => {
         p: { xs: 2, sm: 4 },
         mt: 2,
         maxWidth: 800,
-        mx: "auto"
+        mx: "auto",
       }}
     >
       <Grid item container justifyContent="space-between" alignItems="center">
@@ -132,26 +158,27 @@ export const NoteView = ({ note, onNoteDeleted }) => {
               color="primary"
               disabled={uploadMutation.isPending}
               component="span"
-              sx={{ mr: 1, bgcolor: "#ede7f6", "&:hover": { bgcolor: "#d1c4e9" } }}
+              sx={{
+                mr: 1,
+                bgcolor: "#ede7f6",
+                "&:hover": { bgcolor: "#d1c4e9" },
+              }}
             >
               <UploadOutlined />
             </IconButton>
           </label>
-          <Button
+          <ShadcnButton
             onClick={onSaveNote}
-            color="primary"
-            variant="contained"
             disabled={updateMutation.isPending}
-            sx={{
-              fontWeight: "bold",
-              borderRadius: 2,
-              boxShadow: "0px 2px 8px rgba(25,118,210,0.07)",
-              mr: 1
-            }}
-            startIcon={<SaveOutlined />}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg px-4 py-2 mr-2 flex items-center gap-2 transition-all duration-200"
           >
+            <SaveOutlined />
             Guardar
-          </Button>
+          </ShadcnButton>
+
+          <div className="bg-red-700">
+            ¡Tailwind funcionando!
+          </div>
           <Button
             onClick={onDelete}
             color="error"
@@ -160,7 +187,7 @@ export const NoteView = ({ note, onNoteDeleted }) => {
             sx={{
               fontWeight: "bold",
               borderRadius: 2,
-              boxShadow: "0px 2px 8px rgba(244,67,54,0.07)"
+              boxShadow: "0px 2px 8px rgba(244,67,54,0.07)",
             }}
             startIcon={<DeleteOutline />}
           >
@@ -183,7 +210,7 @@ export const NoteView = ({ note, onNoteDeleted }) => {
             mb: 2,
             backgroundColor: "#f7f7f7",
             borderRadius: 2,
-            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)"
+            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)",
           }}
         />
 
@@ -200,7 +227,7 @@ export const NoteView = ({ note, onNoteDeleted }) => {
           sx={{
             backgroundColor: "#f7f7f7",
             borderRadius: 2,
-            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)"
+            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)",
           }}
         />
       </Grid>
