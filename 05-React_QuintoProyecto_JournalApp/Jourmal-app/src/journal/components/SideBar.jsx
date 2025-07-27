@@ -1,73 +1,88 @@
-
-import {
-  Box,
-  Divider,
-  Drawer,
-  List,
-  Toolbar,
-  Typography,
-  Avatar,
-} from "@mui/material";
 import { useSelector } from "react-redux";
 import { SideBarItem } from "./SideBarItem";
 import { useQuery } from "@tanstack/react-query";
 import { getNotas } from "../../helpers/getNotas";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
-export const SideBar = ({ drawerWidth = 240, onSelectNote }) => {
+export const SideBar = ({ drawerWidth = 240, onSelectNote, activeNoteId }) => {
   const { displayName, uid } = useSelector((state) => state.auth);
-  // Ya no usamos esto :const { notes } = useSelector((state) => state.journal);
 
   const { data: notes = [], isLoading, error } = useQuery({
     queryKey: ["notas", uid],
     queryFn: () => getNotas(uid),
     enabled: !!uid,
+    select: (data) => {
+      return data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
   });
-  return (
-    <Box
-      component="nav"
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-    >
-      <Drawer
-        variant="permanent"
-        open
-        sx={{
-          display: { xs: "block" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: drawerWidth,
-            background: "linear-gradient(135deg, #ede7f6 0%, #d1c4e9 100%)", // Morado suave degradado
-            borderBottomRightRadius: 24,
-            boxShadow: "2px 0 12px 0 rgba(142,36,170,0.10)",
-          },
-        }}
-      >
-        <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1, mb: 1 }}>
-          <Avatar sx={{ bgcolor: "#8e24aa", width: 40, height: 40, fontWeight: "bold", fontSize: 22 }}>
-            {displayName ? displayName[0].toUpperCase() : "U"}
-          </Avatar>
-          <Box>
-            <Typography variant="subtitle1" noWrap component="div" fontWeight="bold" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              Bienvenido <span role="img" aria-label="saludo">👋</span>
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#6d1b7b", fontWeight: "bold" }}>
-              {displayName}
-            </Typography>
-          </Box>
-        </Toolbar>
-        <Divider sx={{ mb: 1 }} />
 
-        <List sx={{ px: 1 }}>
-          {isLoading && <Typography sx={{ px: 2 }}>Cargando notas...</Typography>}
-          {error && <Typography color="error" sx={{ px: 2 }}>Error al cargar notas</Typography>}
+  return (
+    <aside className="">
+      <div className="md:hidden p-2">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="rounded-full">
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64">
+            <SidebarContent
+              displayName={displayName}
+              notes={notes}
+              isLoading={isLoading}
+              error={error}
+              onSelectNote={onSelectNote}
+              activeNoteId={activeNoteId}
+            />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="hidden md:block w-64 h-full bg-gradient-to-br from-purple-600 via-indigo-500 to-blue-500 border-r rounded-br-3xl shadow-lg">
+        <SidebarContent
+          displayName={displayName}
+          notes={notes}
+          isLoading={isLoading}
+          error={error}
+          onSelectNote={onSelectNote}
+          activeNoteId={activeNoteId}
+        />
+      </div>
+    </aside>
+  );
+};
+
+function SidebarContent({ displayName, notes, isLoading, error, onSelectNote, activeNoteId }) {
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-3 p-4">
+        <div className="bg-white text-purple-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg shadow">
+          {displayName ? displayName[0].toUpperCase() : "U"}
+        </div>
+        <div>
+          <div className="font-bold flex items-center gap-1 text-white">
+            Bienvenido <span role="img" aria-label="saludo">👋</span>
+          </div>
+          <div className="text-white font-bold text-sm">{displayName}</div>
+        </div>
+      </div>
+      <hr className="mb-2 border-white/30" />
+      <div className="flex-1 overflow-y-auto px-2">
+        {isLoading && <div className="px-2 text-sm text-white/80">Cargando notas...</div>}
+        {error && <div className="px-2 text-red-200 text-sm">Error al cargar notas</div>}
+        <ul className="space-y-1">
           {notes.map((note) => (
             <SideBarItem
               key={note.id}
               {...note}
               onSelectNote={onSelectNote}
+              isSelected={note.id === activeNoteId} 
             />
           ))}
-        </List>
-      </Drawer>
-    </Box>
+        </ul>
+      </div>
+    </div>
   );
-};
+}

@@ -5,6 +5,7 @@ export const getNotas = async (uid) => {
   if (!uid) throw new Error('UID no proporcionado');
   try {
     const userDocRef = doc(FirebaseDB, uid, 'journal');
+    
     const notasRef = collection(userDocRef, 'notes');
     const notasSnap = await getDocs(notasRef);
     const notas = [];

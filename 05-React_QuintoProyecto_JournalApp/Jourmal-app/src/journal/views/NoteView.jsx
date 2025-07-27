@@ -19,14 +19,16 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ImageGallery } from "../components/ImageGallery";
 import { useForm } from "../../hooks/useForm";
 import { useSelector } from "react-redux";
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
 export const NoteView = ({ note, onNoteDeleted }) => {
+  const [expandedImage, setExpandedImage] = useState(null);
   const { uid } = useSelector((state) => state.auth);
   const queryClient = useQueryClient();
 
@@ -41,16 +43,19 @@ export const NoteView = ({ note, onNoteDeleted }) => {
   });
 
   const prevNoteId = useRef(note?.id);
-  const { body, title, date, onInputChange, formState, onResetForm } = useForm(
-    notaData || {}
-  );
+  const [initialFormData, setInitialFormData] = useState(notaData || {});
 
+  // Solo actualiza el formulario inicial cuando cambia la nota (no cuando subes imágenes)
   useEffect(() => {
-    if (note?.id !== prevNoteId.current) {
-      onResetForm();
+    if (note?.id !== prevNoteId.current && notaData) {
+      setInitialFormData(notaData);
       prevNoteId.current = note?.id;
     }
-  }, [notaData, note?.id]);
+  }, [note?.id, notaData]);
+
+  const { body, title, date, onInputChange, formState, onResetForm } = useForm(
+    initialFormData
+  );
 
   const dataString = useMemo(() => {
     const newDate = new Date(date);
@@ -82,9 +87,10 @@ export const NoteView = ({ note, onNoteDeleted }) => {
     },
   });
 
-  // Mutación para subir imágenes
+  // Mutación para subir imágenes (NO REINICIA EL FORMULARIO)
   const uploadMutation = useMutation({
-    mutationFn: ({ files }) => uploadImagesToNote({ uid, note, files }),
+    mutationFn: ({ files }) =>
+      uploadImagesToNote({ uid, note: notaData, files }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["nota", uid, note?.id] });
       queryClient.invalidateQueries({ queryKey: ["notas", uid] });
@@ -93,12 +99,20 @@ export const NoteView = ({ note, onNoteDeleted }) => {
         "Las imágenes se agregaron correctamente",
         "success"
       );
+      // NO llamamos a onResetForm aquí
     },
   });
 
   const onSaveNote = () => {
-    updateMutation.mutate({ ...formState, id: note.id });
-    console.log("Nota guardada:", formState);
+      const notaCompleta = {
+    ...formState,
+    id: note.id,
+    imageUrls: notaData?.imageUrls || [], 
+  };
+
+    updateMutation.mutate(notaCompleta);
+    console.log("Nota guardada:", notaCompleta);
+
   };
 
   const onDelete = async () => {
@@ -122,119 +136,110 @@ export const NoteView = ({ note, onNoteDeleted }) => {
     uploadMutation.mutate({ files: e.target.files });
   };
 
+  const fileInputRef = useRef();
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   if (isLoading) return <Typography>Cargando nota...</Typography>;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
   return (
-    <Grid
-      container
-      direction="column"
-      spacing={2}
-      sx={{
-        background: "#fff",
-        borderRadius: 3,
-        boxShadow: "0 2px 12px 0 rgba(142,36,170,0.08)",
-        p: { xs: 2, sm: 4 },
-        mt: 2,
-        maxWidth: 800,
-        mx: "auto",
-      }}
-    >
-      <Grid item container justifyContent="space-between" alignItems="center">
-        <Typography fontSize={28} fontWeight="bold" color="#6d1b7b">
-          {dataString}
-        </Typography>
-        <Box>
+    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto mt-8">
+      <div className="flex items-center justify-between mb-6">
+        <span className="text-2xl font-bold text-purple-700">{dataString}</span>
+        <div className="flex items-center gap-3">
           <input
             type="file"
-            id="fileInput"
+            ref={fileInputRef}
             multiple
             onChange={onFileInputChange}
             style={{ display: "none" }}
           />
-          <label htmlFor="fileInput">
-            <IconButton
-              color="primary"
-              disabled={uploadMutation.isPending}
-              component="span"
-              sx={{
-                mr: 1,
-                bgcolor: "#ede7f6",
-                "&:hover": { bgcolor: "#d1c4e9" },
-              }}
-            >
-              <UploadOutlined />
-            </IconButton>
-          </label>
+          <ShadcnButton
+            type="button"
+            variant="outline"
+            disabled={uploadMutation.isPending}
+            className="rounded-full cursor-pointer"
+            onClick={handleUploadClick}
+          >
+            <UploadOutlined />
+            <span className="ml-2">Subir imágenes</span>
+          </ShadcnButton>
           <ShadcnButton
             onClick={onSaveNote}
             disabled={updateMutation.isPending}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg px-4 py-2 mr-2 flex items-center gap-2 transition-all duration-200"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow px-4 py-2 flex items-center gap-2"
           >
             <SaveOutlined />
             Guardar
           </ShadcnButton>
-
-          <div className="bg-red-700">
-            ¡Tailwind funcionando!
-          </div>
-          <Button
+          <ShadcnButton
             onClick={onDelete}
-            color="error"
-            variant="outlined"
+            variant="destructive"
             disabled={deleteMutation.isPending}
-            sx={{
-              fontWeight: "bold",
-              borderRadius: 2,
-              boxShadow: "0px 2px 8px rgba(244,67,54,0.07)",
-            }}
-            startIcon={<DeleteOutline />}
+            className="font-bold rounded-lg px-4 py-2 flex items-center gap-2"
           >
-            Eliminar
-          </Button>
-        </Box>
-      </Grid>
-
-      <Grid item>
-        <TextField
+            <DeleteOutline className="w-5 h-5" />
+            ELIMINAR
+          </ShadcnButton>
+        </div>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-semibold text-gray-600 mb-1">
+          Título
+        </label>
+        <input
           type="text"
-          variant="filled"
-          fullWidth
-          placeholder="Ingrese un título"
-          label="Título"
           name="title"
           value={title || ""}
           onChange={onInputChange}
-          sx={{
-            mb: 2,
-            backgroundColor: "#f7f7f7",
-            borderRadius: 2,
-            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)",
-          }}
+          placeholder="Ingrese un título"
+          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-purple-200"
         />
-
-        <TextField
-          type="text"
-          variant="filled"
-          fullWidth
-          multiline
-          placeholder="¿Qué sucedió en el día de hoy?"
-          minRows={5}
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-semibold text-gray-600 mb-1">
+          Descripción
+        </label>
+        <textarea
           name="body"
           value={body || ""}
           onChange={onInputChange}
-          sx={{
-            backgroundColor: "#f7f7f7",
-            borderRadius: 2,
-            boxShadow: "0px 2px 8px rgba(0,0,0,0.04)",
-          }}
+          placeholder="¿Qué sucedió en el día de hoy?"
+          rows={5}
+          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-purple-200"
         />
-      </Grid>
-
-      <Grid item>
-        <ImageGallery images={notaData?.imageUrls || []} />
-      </Grid>
-    </Grid>
+      </div>
+      <div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {notaData?.imageUrls?.map((url, idx) => (
+            <img
+              key={idx}
+              src={url}
+              alt={`Nota ${idx}`}
+              className="rounded-lg shadow object-cover w-full h-32 transition-transform duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
+              onClick={() => setExpandedImage(url)}
+            />
+          ))}
+        </div>
+        <Dialog
+          open={!!expandedImage}
+          onOpenChange={() => setExpandedImage(null)}
+        >
+          <DialogContent className="flex items-center justify-center bg-transparent shadow-none p-0">
+            {expandedImage && (
+              <img
+                src={expandedImage}
+                alt="Expandida"
+                className="max-w-full max-h-[80vh] rounded-xl shadow-2xl transition-transform duration-300"
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
   );
 };

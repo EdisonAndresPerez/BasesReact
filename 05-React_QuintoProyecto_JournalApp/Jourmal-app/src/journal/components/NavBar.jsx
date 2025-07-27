@@ -15,10 +15,12 @@ export const NavBar = ({ drawerWidth = 240 }) => {
         <AppBar 
             position='fixed'
             sx={{ 
-                width: { sm: `calc(100% - ${ drawerWidth }px)` },
+                width: { sm: `calc(100% - ${ drawerWidth}px)` },
                 ml: { sm: `${ drawerWidth }px` },
+                  
                 background: "linear-gradient(90deg, #4F46E5 0%, #bbdefb 100%)", // Azul suave
                 boxShadow: "0 2px 12px 0 rgba(25,118,210,0.10)"
+                
             }}
         >
             <Toolbar>
