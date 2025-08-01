@@ -5,7 +5,7 @@ import {
   uploadImagesToNote,
   getNotaById,
 } from "../../helpers";
-import { Button as ShadcnButton } from "@/components/ui/button";
+import { Button as ShadcnButton } from "@/components/ui/Button/button";
 import {
   SaveOutlined,
   UploadOutlined,
@@ -19,7 +19,7 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/Dialog/dialog";
 import { ImageGallery } from "../components/ImageGallery";
 import { useForm } from "../../hooks/useForm";
 import { useSelector } from "react-redux";
